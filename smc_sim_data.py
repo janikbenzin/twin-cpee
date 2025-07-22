@@ -355,13 +355,13 @@ print(
     f"Fixed-k - The water kettle system shows the following confidence intervals: {fixed_heating_real_eps}\n\n\n")
 
 fixed_wl_probability = [successes[exp][SUC][upper_lower][int(next(i for i, x in enumerate(wl_upper_boundaries_t) if x == wl_boundary[1]))] for exp in EXPERIMENTS[3:-1]]
-print(f"Fixed-k - The water tank system shows the following empirically estimated probabilities in the order from 11 to 29 initial parameter: {fixed_heating_probability}\n\n\n")
+print(f"Fixed-k - The water tank system shows the following empirically estimated probabilities in the order from 11 to 29 initial parameter: {fixed_wl_probability}\n\n\n")
 fixed_wl_real_eps = [successes[exp][EPS][upper_lower][int(next(i for i, x in enumerate(wl_upper_boundaries_t) if x == wl_boundary[1]))] for exp in EXPERIMENTS[3:-1]]
 print(
     f"Fixed-k - The water tank system shows the following confidence intervals: {fixed_wl_real_eps}\n\n\n")
 
 fixed_irr_probability = [successes[exp][SUC][int(next(i for i, x in enumerate(irr_lower_boundaries) if x == irr_boundary))] for exp in EXPERIMENTS[-1:]]
-print(f"Fixed-k - The irrigation system shows the following empirically estimated probability: {fixed_heating_probability}\n\n\n")
+print(f"Fixed-k - The irrigation system shows the following empirically estimated probability: {fixed_irr_probability}\n\n\n")
 fixed_irr_eps = [successes[exp][EPS][int(next(i for i, x in enumerate(irr_lower_boundaries) if x == irr_boundary))] for exp in EXPERIMENTS[-1:]]
 print(
     f"Fixed-k - The irrigation system shows the following confidence intervals: {fixed_irr_eps}\n\n\n")
