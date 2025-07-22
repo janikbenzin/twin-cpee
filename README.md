@@ -3,8 +3,7 @@
 This repository contains the code to verify reliability through SMC as presented for the evaluation of the paper 'A Service-Oriented Digital Twin Architecture for Seamless Reliability Verification of IoT Systems'.
 The necessary time-series of sensor variables per run and per IoT system with initial parameters is stored in results/results.json.
 The *results.json* is used by the script *smc_sim_data.py* to verify reliability for each IoT system with its respective initial parameter.
-Hence, a quick way of reproducing the reliability verification in the evaluation is to execute the  *smc_sim_data.py* script. 
-To read the runs, the repository contains a wheel from https://github.com/etm/xes-yaml-pm4py-extension in xes-yaml-pm4py-extension/.
+Hence, a quick way of reproducing the reliability verification in the evaluation is to execute the  *smc_sim_data.py* script.
 
 ## Getting started
 Tested with: Python 3.11, Linux (Fedora)
