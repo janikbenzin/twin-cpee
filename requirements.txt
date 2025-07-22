@@ -1,0 +1,9 @@
+juliacall==0.9.24
+diffeqpy==2.5.3
+numpy==2.2.5
+matplotlib==3.10.1
+sympy==1.14.0
+scipy==1.16.0
+pyyaml==6.0.2
+pandas==2.3.0
+seaborn==0.13.2
