@@ -1,0 +1,335 @@
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements>
+    <lower>80</lower>
+    <upper>100</upper>
+  </dataelements>
+  <endpoints>
+    <timeout>https-post://cpee.org/services/timeout.php</timeout>
+    <user>https-post://cpee.org/services/timeout-user.php</user>
+    <auto>https-post://cpee.org/services/timeout-auto.php</auto>
+    <dtcget>https-get://cpee.org/dtc/1/all</dtcget>
+    <subprocess>https-post://cpee.org/flow/start/url/</subprocess>
+    <switchheat>https-put://cpee.org/dtc/1/actuators/heat</switchheat>
+    <send>https-post://cpee.org/ing/correlators/message/send/</send>
+    <receive>https-get://cpee.org/ing/correlators/message/receive/</receive>
+  </endpoints>
+  <attributes>
+    <guarded>none</guarded>
+    <modeltype>CPEE</modeltype>
+    <theme>packed</theme>
+    <guarded_id/>
+    <info>Heating - Control</info>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <model_uuid>192ce4db-922e-4989-9518-1af521a5065d</model_uuid>
+    <model_version/>
+    <design_dir>Experiments.dir/Digital Twin Container.dir/Heating.dir/</design_dir>
+    <design_stage>development</design_stage>
+  </attributes>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <manipulate id="a6" label="Initialize Time">data.start = Time.now.to_i</manipulate>
+      <call id="a7" endpoint="dtcget">
+        <parameters>
+          <label>Read</label>
+          <arguments>
+            <item>sensors/temperature</item>
+          </arguments>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result">if result['partial']
+  data.temperature = result['partial']['value']
+end
+if result['full']
+  data.temperature = result['full']['sensors/temperature']
+end</update>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general/>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <parallel wait="1" cancel="last">
+        <parallel_branch pass="" local="">
+          <call id="a1" endpoint="dtcget">
+            <parameters>
+              <label>Read</label>
+              <arguments>
+                <many>true</many>
+                <item>sensors/temperature</item>
+              </arguments>
+            </parameters>
+            <code>
+              <prepare/>
+              <finalize output="result"/>
+              <update output="result">if result['partial']
+  data.temperature = result['partial']['value']
+end
+if result['full']
+  data.temperature = result['full']['sensors/temperature']
+end</update>
+              <rescue output="result"/>
+            </code>
+            <annotations>
+              <_generic/>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_shifting>
+                <_shifting_type>Duration</_shifting_type>
+              </_shifting>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general/>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+        <parallel_branch pass="" local="">
+          <loop mode="post_test" condition="data.duration &lt; 20">
+            <_probability>
+              <_probability_min/>
+              <_probability_max/>
+              <_probability_avg/>
+            </_probability>
+            <call id="a5" endpoint="timeout">
+              <parameters>
+                <label>Wait</label>
+                <arguments>
+                  <timeout>1</timeout>
+                </arguments>
+              </parameters>
+              <code>
+                <prepare/>
+                <finalize output="result">data.duration = Time.now.to_i - data.start</finalize>
+                <update output="result"/>
+                <rescue output="result"/>
+              </code>
+              <annotations>
+                <_generic/>
+                <_timing>
+                  <_timing_weight/>
+                  <_timing_avg/>
+                  <explanations/>
+                </_timing>
+                <_shifting>
+                  <_shifting_type>Duration</_shifting_type>
+                </_shifting>
+                <_context_data_analysis>
+                  <probes/>
+                  <ips/>
+                </_context_data_analysis>
+                <report>
+                  <url/>
+                </report>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+              <documentation>
+                <input/>
+                <output/>
+                <implementation>
+                  <description/>
+                </implementation>
+                <code>
+                  <description/>
+                </code>
+              </documentation>
+            </call>
+            <choose mode="exclusive">
+              <alternative condition="rand(1..100) == 50">
+                <call id="a4" endpoint="timeout">
+                  <parameters>
+                    <label/>
+                    <arguments>
+                      <timeout>!rand((d = [20-data.duration,10].min) &lt; 6 ? d..d : 6..d)</timeout>
+                    </arguments>
+                  </parameters>
+                  <annotations>
+                    <_generic/>
+                    <_timing>
+                      <_timing_weight/>
+                      <_timing_avg/>
+                      <explanations/>
+                    </_timing>
+                    <_shifting>
+                      <_shifting_type>Duration</_shifting_type>
+                    </_shifting>
+                    <_context_data_analysis>
+                      <probes/>
+                      <ips/>
+                    </_context_data_analysis>
+                    <report>
+                      <url/>
+                    </report>
+                    <_notes>
+                      <_notes_general/>
+                    </_notes>
+                  </annotations>
+                  <documentation>
+                    <input/>
+                    <output/>
+                    <implementation>
+                      <description/>
+                    </implementation>
+                  </documentation>
+                </call>
+                <_probability>
+                  <_probability_min/>
+                  <_probability_max/>
+                  <_probability_avg/>
+                </_probability>
+              </alternative>
+              <otherwise>
+                <choose mode="exclusive">
+                  <alternative condition="data.temperature &lt; data.lower">
+                    <_probability>
+                      <_probability_min/>
+                      <_probability_max/>
+                      <_probability_avg/>
+                    </_probability>
+                    <call id="a2" endpoint="switchheat">
+                      <parameters>
+                        <label>On</label>
+                        <arguments>
+                          <boolean>true</boolean>
+                        </arguments>
+                      </parameters>
+                      <annotations>
+                        <_generic/>
+                        <_timing>
+                          <_timing_weight/>
+                          <_timing_avg/>
+                          <explanations/>
+                        </_timing>
+                        <_shifting>
+                          <_shifting_type>Duration</_shifting_type>
+                        </_shifting>
+                        <_context_data_analysis>
+                          <probes/>
+                          <ips/>
+                        </_context_data_analysis>
+                        <report>
+                          <url/>
+                        </report>
+                        <_notes>
+                          <_notes_general/>
+                        </_notes>
+                      </annotations>
+                      <documentation>
+                        <input/>
+                        <output/>
+                        <implementation>
+                          <description/>
+                        </implementation>
+                      </documentation>
+                    </call>
+                  </alternative>
+                  <alternative condition="data.temperature == data.upper">
+                    <_probability>
+                      <_probability_min/>
+                      <_probability_max/>
+                      <_probability_avg/>
+                    </_probability>
+                    <call id="a3" endpoint="switchheat">
+                      <parameters>
+                        <label>Off</label>
+                        <arguments>
+                          <bool>false</bool>
+                        </arguments>
+                      </parameters>
+                      <annotations>
+                        <_generic/>
+                        <_timing>
+                          <_timing_weight/>
+                          <_timing_avg/>
+                          <explanations/>
+                        </_timing>
+                        <_shifting>
+                          <_shifting_type>Duration</_shifting_type>
+                        </_shifting>
+                        <_context_data_analysis>
+                          <probes/>
+                          <ips/>
+                        </_context_data_analysis>
+                        <report>
+                          <url/>
+                        </report>
+                        <_notes>
+                          <_notes_general/>
+                        </_notes>
+                      </annotations>
+                      <documentation>
+                        <input/>
+                        <output/>
+                        <implementation>
+                          <description/>
+                        </implementation>
+                      </documentation>
+                    </call>
+                  </alternative>
+                  <otherwise/>
+                </choose>
+              </otherwise>
+            </choose>
+          </loop>
+        </parallel_branch>
+      </parallel>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+</testset>

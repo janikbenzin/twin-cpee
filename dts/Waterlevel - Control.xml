@@ -1,0 +1,401 @@
+<testset xmlns="http://cpee.org/ns/properties/2.0">
+  <executionhandler>ruby</executionhandler>
+  <dataelements/>
+  <endpoints>
+    <timeout>https-post://cpee.org/services/timeout.php</timeout>
+    <dtcget>https-get://cpee.org/dtc/9/all</dtcget>
+    <switchflow>https-put://cpee.org/dtc/9/actuators/flow</switchflow>
+  </endpoints>
+  <attributes>
+    <guarded>none</guarded>
+    <modeltype>CPEE</modeltype>
+    <guarded_id/>
+    <theme>dataflow</theme>
+    <info>Waterlevel - Control</info>
+    <creator>Christine Ashcreek</creator>
+    <author>Christine Ashcreek</author>
+    <model_uuid>192ce4db-922e-4989-9518-1af521a5065d</model_uuid>
+    <model_version/>
+    <design_stage>development</design_stage>
+    <design_dir>Experiments.dir/Digital Twin Container.dir/WaterLevel.dir/</design_dir>
+  </attributes>
+  <description>
+    <description xmlns="http://cpee.org/ns/description/1.0">
+      <manipulate id="a4" label="Initialize Time">data.start = Time.now.to_i</manipulate>
+      <call id="a6" endpoint="dtcget">
+        <parameters>
+          <label>Read</label>
+          <arguments>
+            <item>sensors/level</item>
+          </arguments>
+        </parameters>
+        <code>
+          <prepare/>
+          <finalize output="result"/>
+          <update output="result">class RandomGaussian
+  def initialize(mean, stddev, rand_helper = lambda { Kernel.rand })
+    @rand_helper = rand_helper
+    @mean = mean
+    @stddev = stddev
+    @valid = false
+    @next = 0
+  end
+
+  def rand
+    if @valid then
+      @valid = false
+      return @next
+    else
+      @valid = true
+      x, y = self.class.gaussian(@mean, @stddev, @rand_helper)
+      @next = y
+      return x
+    end
+  end
+
+  private
+    def self.gaussian(mean, stddev, rand)
+      theta = 2 * Math::PI * rand.call
+      rho = Math.sqrt(-2 * Math.log(1 - rand.call))
+      scale = stddev * rho
+      x = mean + scale * Math.cos(theta)
+      y = mean + scale * Math.sin(theta)
+      return x, y
+    end
+end
+
+if result['full']
+  data.level = RandomGaussian.new(result['full']['sensors/level'].to_f, 1).rand
+end</update>
+          <rescue output="result"/>
+        </code>
+        <annotations>
+          <_generic/>
+          <_timing>
+            <_timing_weight/>
+            <_timing_avg/>
+            <explanations/>
+          </_timing>
+          <_shifting>
+            <_shifting_type>Duration</_shifting_type>
+          </_shifting>
+          <_context_data_analysis>
+            <probes/>
+            <ips/>
+          </_context_data_analysis>
+          <report>
+            <url/>
+          </report>
+          <_notes>
+            <_notes_general>class RandomGaussian
+  def initialize(mean, stddev, rand_helper = lambda { Kernel.rand })
+    @rand_helper = rand_helper
+    @mean = mean
+    @stddev = stddev
+    @valid = false
+    @next = 0
+  end
+
+  def rand
+    if @valid then
+      @valid = false
+      return @next
+    else
+      @valid = true
+      x, y = self.class.gaussian(@mean, @stddev, @rand_helper)
+      @next = y
+      return x
+    end
+  end
+
+  private
+  def self.gaussian(mean, stddev, rand)
+    theta = 2 * Math::PI * rand.call
+    rho = Math.sqrt(-2 * Math.log(1 - rand.call))
+    scale = stddev * rho
+    x = mean + scale * Math.cos(theta)
+    y = mean + scale * Math.sin(theta)
+    return x, y
+  end
+end</_notes_general>
+          </_notes>
+        </annotations>
+        <documentation>
+          <input/>
+          <output/>
+          <implementation>
+            <description/>
+          </implementation>
+          <code>
+            <description/>
+          </code>
+        </documentation>
+      </call>
+      <parallel wait="1" cancel="last">
+        <parallel_branch pass="" local="">
+          <call id="a1" endpoint="dtcget">
+            <parameters>
+              <label>Read</label>
+              <arguments>
+                <many>true</many>
+                <item>sensors/level</item>
+              </arguments>
+            </parameters>
+            <code>
+              <prepare/>
+              <finalize output="result"/>
+              <update output="result">class RandomGaussian
+  def initialize(mean, stddev, rand_helper = lambda { Kernel.rand })
+    @rand_helper = rand_helper
+    @mean = mean
+    @stddev = stddev
+    @valid = false
+    @next = 0
+  end
+
+  def rand
+    if @valid then
+      @valid = false
+      return @next
+    else
+      @valid = true
+      x, y = self.class.gaussian(@mean, @stddev, @rand_helper)
+      @next = y
+      return x
+    end
+  end
+
+  private
+    def self.gaussian(mean, stddev, rand)
+      theta = 2 * Math::PI * rand.call
+      rho = Math.sqrt(-2 * Math.log(1 - rand.call))
+      scale = stddev * rho
+      x = mean + scale * Math.cos(theta)
+      y = mean + scale * Math.sin(theta)
+      return x, y
+    end
+end
+
+if result['partial']
+  data.level = result['partial']['value']
+end
+if result['full']
+  data.level = RandomGaussian.new(result['full']['sensors/level'].to_f, 1).rand
+end</update>
+              <rescue output="result"/>
+            </code>
+            <annotations>
+              <_generic/>
+              <_timing>
+                <_timing_weight/>
+                <_timing_avg/>
+                <explanations/>
+              </_timing>
+              <_shifting>
+                <_shifting_type>Duration</_shifting_type>
+              </_shifting>
+              <_context_data_analysis>
+                <probes/>
+                <ips/>
+              </_context_data_analysis>
+              <report>
+                <url/>
+              </report>
+              <_notes>
+                <_notes_general>class RandomGaussian
+  def initialize(mean, stddev, rand_helper = lambda { Kernel.rand })
+    @rand_helper = rand_helper
+    @mean = mean
+    @stddev = stddev
+    @valid = false
+    @next = 0
+  end
+
+  def rand
+    if @valid then
+      @valid = false
+      return @next
+    else
+      @valid = true
+      x, y = self.class.gaussian(@mean, @stddev, @rand_helper)
+      @next = y
+      return x
+    end
+  end
+
+  private
+  def self.gaussian(mean, stddev, rand)
+    theta = 2 * Math::PI * rand.call
+    rho = Math.sqrt(-2 * Math.log(1 - rand.call))
+    scale = stddev * rho
+    x = mean + scale * Math.cos(theta)
+    y = mean + scale * Math.sin(theta)
+    return x, y
+  end
+end</_notes_general>
+              </_notes>
+            </annotations>
+            <documentation>
+              <input/>
+              <output/>
+              <implementation>
+                <description/>
+              </implementation>
+              <code>
+                <description/>
+              </code>
+            </documentation>
+          </call>
+        </parallel_branch>
+        <parallel_branch pass="" local="">
+          <loop mode="post_test" condition="data.duration &lt; 20">
+            <_probability>
+              <_probability_min/>
+              <_probability_max/>
+              <_probability_avg/>
+            </_probability>
+            <call id="a5" endpoint="timeout">
+              <parameters>
+                <label>Wait</label>
+                <arguments>
+                  <timeout>1</timeout>
+                </arguments>
+              </parameters>
+              <code>
+                <prepare/>
+                <finalize output="result">data.duration = Time.now.to_i - data.start</finalize>
+                <update output="result"/>
+                <rescue output="result"/>
+              </code>
+              <annotations>
+                <_generic/>
+                <_timing>
+                  <_timing_weight/>
+                  <_timing_avg/>
+                  <explanations/>
+                </_timing>
+                <_shifting>
+                  <_shifting_type>Duration</_shifting_type>
+                </_shifting>
+                <_context_data_analysis>
+                  <probes/>
+                  <ips/>
+                </_context_data_analysis>
+                <report>
+                  <url/>
+                </report>
+                <_notes>
+                  <_notes_general/>
+                </_notes>
+              </annotations>
+              <documentation>
+                <input/>
+                <output/>
+                <implementation>
+                  <description/>
+                </implementation>
+                <code>
+                  <description/>
+                </code>
+              </documentation>
+            </call>
+            <choose mode="exclusive">
+              <alternative condition="data.level  &lt;= 10">
+                <_probability>
+                  <_probability_min/>
+                  <_probability_max/>
+                  <_probability_avg/>
+                </_probability>
+                <call id="a2" endpoint="switchflow">
+                  <parameters>
+                    <label>Off</label>
+                    <arguments>
+                      <boolean>false</boolean>
+                    </arguments>
+                  </parameters>
+                  <annotations>
+                    <_generic/>
+                    <_timing>
+                      <_timing_weight/>
+                      <_timing_avg/>
+                      <explanations/>
+                    </_timing>
+                    <_shifting>
+                      <_shifting_type>Duration</_shifting_type>
+                    </_shifting>
+                    <_context_data_analysis>
+                      <probes/>
+                      <ips/>
+                    </_context_data_analysis>
+                    <report>
+                      <url/>
+                    </report>
+                    <_notes>
+                      <_notes_general/>
+                    </_notes>
+                  </annotations>
+                  <documentation>
+                    <input/>
+                    <output/>
+                    <implementation>
+                      <description/>
+                    </implementation>
+                  </documentation>
+                </call>
+              </alternative>
+              <alternative condition="data.level &gt;= 30">
+                <_probability>
+                  <_probability_min/>
+                  <_probability_max/>
+                  <_probability_avg/>
+                </_probability>
+                <call id="a3" endpoint="switchflow">
+                  <parameters>
+                    <label>On</label>
+                    <arguments>
+                      <bool>true</bool>
+                    </arguments>
+                  </parameters>
+                  <annotations>
+                    <_generic/>
+                    <_timing>
+                      <_timing_weight/>
+                      <_timing_avg/>
+                      <explanations/>
+                    </_timing>
+                    <_shifting>
+                      <_shifting_type>Duration</_shifting_type>
+                    </_shifting>
+                    <_context_data_analysis>
+                      <probes/>
+                      <ips/>
+                    </_context_data_analysis>
+                    <report>
+                      <url/>
+                    </report>
+                    <_notes>
+                      <_notes_general/>
+                    </_notes>
+                  </annotations>
+                  <documentation>
+                    <input/>
+                    <output/>
+                    <implementation>
+                      <description/>
+                    </implementation>
+                  </documentation>
+                </call>
+              </alternative>
+              <otherwise/>
+            </choose>
+          </loop>
+        </parallel_branch>
+      </parallel>
+    </description>
+  </description>
+  <transformation>
+    <description type="copy"/>
+    <dataelements type="none"/>
+    <endpoints type="none"/>
+  </transformation>
+</testset>
