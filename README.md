@@ -10,7 +10,7 @@ Tested with: Python 3.11, Linux (Fedora)
 
 ### Reproduce evaluation results
 1. Execute install.sh 
-   - Prepares python environment, installs dependencies, downloads dataset from Zenodo, unpacks the dataset
+   - Prepares python environment, installs dependencies, downloads datasets from Zenodo, unpacks datasets
 2. Execute extract_variable_timeseries.py
    - Reads each run, extracts the relevant sensor variables with timestamps, and writes the time series to results.json
 3. Execute smc_sim_data.py
@@ -54,3 +54,11 @@ Physical: Soil Moisture - Physical.xml
 Control: Soil Moisture - Control.xml
 
 Environment: Soil Moisture - Environment *.xml
+
+
+### Runtime Digital Twin
+The runtime DT for the cotton candy system are available at https://cpee.org/hub/?stage=development&dir=Theses.dir/Nicolas%20Arteaga.dir/. 
+They could be executed on www.cpee.org as follows, if the actual automated cotton candy machine is ready for execution: 
+1. Navigate to https://cpee.org/hub/?stage=development&dir=Theses.dir/Nicolas%20Arteaga.dir/
+2. Click on a model
+3. Execute

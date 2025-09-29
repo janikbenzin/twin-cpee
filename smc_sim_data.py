@@ -1,15 +1,17 @@
 import json
 import collections as cl
-from scores import calc_clopper_pearson
+import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+from scores import calc_clopper_pearson
 from reliability_assurance_quantification import precompute_smallest_k, DELTA
 
 EXPERIMENTS = ["heating_batch_81", "heating_batch_90", "heating_batch_99", "waterlevel_batch_11",
                "waterlevel_batch_20", "waterlevel_batch_29", "irrigation_batch_1"]
-exp = EXPERIMENTS[0]
+REAL_WORLD = "cotton_candy"
 TIME = "time"
 TEMP = "temperature"
 LEVEL = "level"
@@ -329,6 +331,98 @@ visualize_scenarios(df_irr_f, configs[0], ci=True, format="png", filename="irrig
 df_irr_f = df_irr[df_irr["empirical_prob"] < PHAT_WORST]
 
 
+### Cotton Candy
+
+exp = REAL_WORLD
+step_width = 0.1
+k = 175
+
+# Remove invalid experiments 'fcf4258c-b3b3-4a5a-b391-abfdbb012872', '9a8fa316-e998-4363-a656-4322df456330'
+del res[exp]['fcf4258c-b3b3-4a5a-b391-abfdbb012872']
+del res[exp]['9a8fa316-e998-4363-a656-4322df456330']
+
+
+cc_upper_bound_min = 95
+cc_upper_bound_max = 100
+cc_lower_bound_max = 45
+cc_lower_bound_min = 40
+cc_steps_lower = (cc_lower_bound_max - cc_lower_bound_min) / step_width
+cc_steps_upper = (cc_upper_bound_max - cc_upper_bound_min) / step_width
+cc_upper_boundaries = [cc_upper_bound_min + i * step_width for i in range(int(cc_steps_upper) + 1)]
+cc_lower_boundaries = [cc_lower_bound_min + i * step_width for i in range(int(cc_steps_lower) + 1)]
+cc_upper_boundaries.reverse()
+
+for sid in res[exp]:
+    res[exp][sid]['variable'] = [float(v) for v in res[exp][sid]['variable']]
+
+successes[exp] = get_multi_success_dict()
+
+for bound in cc_upper_boundaries:
+    eval_multi_success_epsilon(res, exp, bound, None, successes, upper_partial, lambda t, b: t > b, k)
+for bound in cc_lower_boundaries:
+    eval_multi_success_epsilon(res, exp, bound, None, successes, lower_partial, lambda t, b: t < b, k)
+for bound_l, bound_u in zip(cc_lower_boundaries, cc_upper_boundaries):
+    eval_multi_success_epsilon(res, exp, bound_l, bound_u, successes, upper_lower,
+                                   lambda t, b1, b2: t < b1 or t > b2, k)
+
+boundary_values = {lower_partial: cc_lower_boundaries, upper_partial: cc_upper_boundaries,
+                   upper_lower: cc_upper_boundaries}
+configs = [lower_partial, upper_partial, upper_lower]
+
+for config in configs:
+    for i, b_val in enumerate(boundary_values[config]):
+        if successes[exp][SUC][config][i] > 0 and successes[exp][EPS][config][i] > 0:
+                data.append({
+                    'scenario': exp,
+                    'config': config,
+                    'boundary_value': b_val,
+                    'empirical_prob': successes[exp][SUC][config][i],
+                    'ci_lower': successes[exp][SUC][config][i] - successes[exp][EPS][config][i] if
+                    successes[exp][SUC][config][i] - successes[exp][EPS][config][i] > 0 else 0,
+                    'ci_upper': successes[exp][SUC][config][i] + successes[exp][EPS][config][i]
+                })
+        elif successes[exp][SUC][config][i] == 0 or successes[exp][EPS][config][i] < 0:
+                data.append({
+                    'scenario': exp,
+                    'config': config,
+                    'boundary_value': b_val,
+                    'empirical_prob': successes[exp][SUC][config][i],
+                    'ci_lower': np.nan,
+                    'ci_upper': np.nan
+                })
+
+df_cc = pd.DataFrame(data)
+df_cc_f = df_cc[df_cc["empirical_prob"] < PHAT_WORST]
+plt.figure(figsize=(10, 30))
+sns.set(style='whitegrid', rc={"figure.dpi": 192})
+
+
+for scenario in df_cc['scenario'].unique():
+    # xticklabels=ticks,
+    visualize_scenarios(df_cc, scenario, ci=False, format="png", boundary_label="Head temp (°C)")
+    plt.figure(figsize=(10, 30))
+    visualize_scenarios(df_cc_f, scenario, ci=True, format="png", boundary_label="Head temp (°C)")
+    plt.figure(figsize=(10, 30))
+
+
+
+
+diff_max = None
+diff_min = None
+for sid in res[exp]:
+    low = datetime.datetime.fromisoformat(res[exp][sid]['time'][0])
+    high = datetime.datetime.fromisoformat(res[exp][sid]['time'][-1])
+    if low != high:
+        if diff_max is None and diff_min is None:
+            diff_max = high - low
+            diff_min = high - low
+        elif diff_max < high - low:
+            diff_max = high - low
+        elif diff_min > high - low:
+            diff_min = high - low
+
+
+
 ### Sequential
 
 epsilons = [0.025, 0.02, 0.015, 0.01, 0.005]
@@ -347,6 +441,7 @@ while k < 1000:
 heating_boundary = 76  # with prob 1.3% (81), 3.0% (90), 2.3% (99) -> conservative 3.0% [0.018890, 0.041110]
 wl_boundary = (2, 38)  # with prob 4.2% (11), 0.3% (20), 0.1% (29) -> conservative 4.2% [0.029042, 0.054958]
 irr_boundary = 0.18  # with prob 0.4%
+cc_boundary = (40,100)  # with prob 8.57%
 
 fixed_heating_probability = [successes[exp][SUC][int(next(i for i, x in enumerate(heating_boundaries) if x == heating_boundary))] for exp in EXPERIMENTS[:3]]
 print(f"Fixed-k - The water kettle system shows the following empirically estimated probabilities in the order from 81 to 99 initial parameter: {fixed_heating_probability}\n\n\n")
@@ -365,6 +460,12 @@ print(f"Fixed-k - The irrigation system shows the following empirically estimate
 fixed_irr_eps = [successes[exp][EPS][int(next(i for i, x in enumerate(irr_lower_boundaries) if x == irr_boundary))] for exp in EXPERIMENTS[-1:]]
 print(
     f"Fixed-k - The irrigation system shows the following confidence intervals: {fixed_irr_eps}\n\n\n")
+
+fixed_cc_probability = [successes[REAL_WORLD][SUC][upper_lower][int(next(i for i, x in enumerate(cc_upper_boundaries) if x == cc_boundary[1]))]]
+print(f"Fixed-k - The cotton candy system shows the following empirically estimated probability: {fixed_cc_probability}\n\n\n")
+fixed_cc_eps = [successes[REAL_WORLD][EPS][upper_lower][int(next(i for i, x in enumerate(cc_lower_boundaries) if x == cc_boundary[0]))]]
+print(
+    f"Fixed-k - The cotton candy system shows the following confidence intervals: {fixed_cc_eps}\n\n\n")
 
 ## OVERALL on/off or heat/cool nondeterministically decided
 first_k_successes = {k:
