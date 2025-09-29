@@ -7,4 +7,6 @@ gem install cpee-logging-xes-yaml
 cd sim_data/
 curl --output runs_all_iot_systems.tgz "https://zenodo.org/api/records/16310813/files-archive"
 tar -xvzf runs_all_iot_systems.tgz
-
+cd ../run_data/
+curl --output runs_cotton_candy.zip "https://zenodo.org/records/17226615/files/cotton-candy.zip?download=1"
+unzip runs_cotton_candy.zip
