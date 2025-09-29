@@ -57,8 +57,5 @@ Environment: Soil Moisture - Environment *.xml
 
 
 ### Runtime Digital Twin
-The runtime DT for the cotton candy system are available at https://cpee.org/hub/?stage=development&dir=Theses.dir/Nicolas%20Arteaga.dir/. 
-They could be executed on www.cpee.org as follows, if the actual automated cotton candy machine is ready for execution: 
-1. Navigate to https://cpee.org/hub/?stage=development&dir=Theses.dir/Nicolas%20Arteaga.dir/
-2. Click on a model
-3. Execute
+The runtime DT for the cotton candy system are available at https://zenodo.org/records/17226615. 
+They could be executed on www.cpee.org similar to design time DTs, if the actual automated cotton candy machine would be ready for execution.
